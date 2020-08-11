@@ -10,6 +10,8 @@ use App\Http\Resources\Book\BookCollection;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Http;
 
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Client;
 
 class BookController extends Controller
 {
@@ -116,15 +118,14 @@ class BookController extends Controller
     {
         $iceFireApiUrl = env('ICE_AND_FIRE_API_URL');
 
-        $response = Http::get( 'https://api.github.com/users/paulredmond/gists' );
-
-        // Array of data from the JSON response
-        $data = $response->json();
+        $client = new Client(); //GuzzleHttp\Client
+        $res = $client->request('GET', $iceFireApiUrl . '/' . $bookName );
+        $data = $res->getBody();
 
         return response([
             'status_code' => 200,
             'status' => 'success',
-            'data' => $response,
+            'data' => $data,
         ], Response::HTTP_OK);
 
     }
